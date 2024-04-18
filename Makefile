@@ -1,0 +1,1 @@
+docker run --name backendMasterGo -p 5432:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=backendMasterGoSecret -d postgres:16-alpine
