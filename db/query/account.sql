@@ -1,5 +1,5 @@
 -- name: CreateAccount :one
-INSERT INTO account (
+INSERT INTO accounts (
     owner,
     balance,
     currency
@@ -8,21 +8,21 @@ INSERT INTO account (
 )
 RETURNING *;
 
--- name: GetAccount :one
-SELECT * FROM account
+-- name: GetAccounts :one
+SELECT * FROM accounts
 WHERE id = $1 LIMIT 1;
 
--- name: ListAccount :many
-SELECT * FROM account
+-- name: ListAccounts :many
+SELECT * FROM accounts
 ORDER BY id
 LIMIT $1
 OFFSET $2;
 
--- name: UpdateAccount :exec
-UPDATE account
+-- name: UpdateAccounts :exec
+UPDATE accounts
 SET balance = $2
 WHERE id = $1;
 
--- name: DeleteAccount :exec
-DELETE FROM account
+-- name: DeleteAccounts :exec
+DELETE FROM accounts
 WHERE id = $1;
