@@ -57,7 +57,7 @@ sqlc:
 	sqlc generate
 
 test:
-	go
+	go test -v -cover ./...
 
 # Phony targets to avoid conflicts with files of the same name
 .PHONY: createpg startpg stoppg removepg psql sh createdb dropdb dumpdb restoredb connectdb migrateup migratedown sqlc
