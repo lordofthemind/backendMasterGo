@@ -53,5 +53,8 @@ migrateup:
 migratedown:
 	migrate -path db/migration -database "postgresql://root:backendMasterGoSecret@localhost:5432/$(DB_NAME)?sslmode=disable" -verbose down
 
+sqlc:
+	sqlc generate
+
 # Phony targets to avoid conflicts with files of the same name
-.PHONY: createpg startpg stoppg removepg psql sh createdb dropdb dumpdb restoredb connectdb migrateup migratedown
+.PHONY: createpg startpg stoppg removepg psql sh createdb dropdb dumpdb restoredb connectdb migrateup migratedown sqlc
