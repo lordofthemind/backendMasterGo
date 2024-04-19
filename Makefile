@@ -56,5 +56,8 @@ migratedown:
 sqlc:
 	sqlc generate
 
+test:
+	go
+
 # Phony targets to avoid conflicts with files of the same name
 .PHONY: createpg startpg stoppg removepg psql sh createdb dropdb dumpdb restoredb connectdb migrateup migratedown sqlc

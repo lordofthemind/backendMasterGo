@@ -1,5 +1,29 @@
 .
+├── Makefile
+├── db
+│   ├── migration
+│   │   ├── 000001_init_schema.down.sql
+│   │   └── 000001_init_schema.up.sql
+│   ├── query
+│   │   ├── account.sql
+│   │   ├── entry.sql
+│   │   └── transfer.sql
+│   └── sqlc
+│       ├── account.sql.go
+│       ├── account_test.go
+│       ├── db.go
+│       ├── entry.sql.go
+│       ├── entry_test.go
+│       ├── main_test.go
+│       ├── models.go
+│       ├── transfer.sql.go
+│       └── transfer_test.go
 ├── go.mod
-└── tree.txt
+├── go.sum
+├── simple_bank.sql
+├── sqlc.yaml
+├── tree.txt
+└── utils
+    └── randomGenerator.go
 
-0 directories, 2 files
+5 directories, 21 files
