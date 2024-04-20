@@ -1,17 +1,28 @@
 .
 ├── Makefile
+├── TestGetAccountAPI.png
 ├── api
 │   ├── account.go
-│   └── server.go
+│   ├── account_test.go
+│   ├── main_test.go
+│   ├── server.go
+│   ├── transfer.go
+│   ├── user.go
+│   └── validator.go
 ├── app.env
 ├── db
 │   ├── migration
 │   │   ├── 000001_init_schema.down.sql
-│   │   └── 000001_init_schema.up.sql
+│   │   ├── 000001_init_schema.up.sql
+│   │   ├── 000002_add_users.down.sql
+│   │   └── 000002_add_users.up.sql
+│   ├── mock
+│   │   └── store.go
 │   ├── query
 │   │   ├── account.sql
 │   │   ├── entry.sql
-│   │   └── transfer.sql
+│   │   ├── transfer.sql
+│   │   └── user.sql
 │   └── sqlc
 │       ├── account.sql.go
 │       ├── account_test.go
@@ -24,7 +35,9 @@
 │       ├── store.go
 │       ├── store_test.go
 │       ├── transfer.sql.go
-│       └── transfer_test.go
+│       ├── transfer_test.go
+│       ├── user.sql.go
+│       └── user_test.go
 ├── go.mod
 ├── go.sum
 ├── main.go
@@ -33,6 +46,9 @@
 ├── tree.txt
 └── utils
     ├── config.go
+    ├── currency.go
+    ├── password.go
+    ├── password_test.go
     └── randomGenerator.go
 
-6 directories, 29 files
+7 directories, 44 files
