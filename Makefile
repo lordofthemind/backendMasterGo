@@ -50,8 +50,14 @@ connectdb:
 migrateup:
 	migrate -path db/migration -database "postgresql://root:backendMasterGoSecret@localhost:5432/$(DB_NAME)?sslmode=disable" -verbose up
 
+migrateup1:
+	migrate -path db/migration -database "postgresql://root:backendMasterGoSecret@localhost:5432/$(DB_NAME)?sslmode=disable" -verbose up 1
+
 migratedown:
 	migrate -path db/migration -database "postgresql://root:backendMasterGoSecret@localhost:5432/$(DB_NAME)?sslmode=disable" -verbose down
+
+migratedown1:
+	migrate -path db/migration -database "postgresql://root:backendMasterGoSecret@localhost:5432/$(DB_NAME)?sslmode=disable" -verbose down 1
 
 sqlc:
 	sqlc generate
@@ -66,4 +72,4 @@ mock:
 	mockgen -package mockdb -destination db/mock/store.go github.com/lordofthemind/backendMasterGo/db/sqlc Store
 
 # Phony targets to avoid conflicts with files of the same name
-.PHONY: createpg startpg stoppg removepg psql sh createdb dropdb dumpdb restoredb connectdb migrateup migratedown sqlc test server mock
+.PHONY: createpg startpg stoppg removepg psql sh createdb dropdb dumpdb restoredb connectdb migrateup migratedown sqlc test server mock migrateup1 migratedown1
