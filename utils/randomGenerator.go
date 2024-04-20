@@ -46,7 +46,7 @@ func (rg *randomGenerator) RandomMoney() int64 {
 
 // RandomCurrency generates a random currency from a list of provided currencies
 func (rg *randomGenerator) RandomCurrency() string {
-	currencies := []string{"USD", "EUR", "CAD"}
+	currencies := []string{USD, EUR, CAD}
 	n := len(currencies)
 	if n == 0 {
 		return "" // Return empty string if no currencies provided
