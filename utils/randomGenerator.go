@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"fmt"
 	"math/rand"
 	"time"
 )
@@ -52,4 +53,8 @@ func (rg *randomGenerator) RandomCurrency() string {
 		return "" // Return empty string if no currencies provided
 	}
 	return currencies[rg.rand.Intn(n)]
+}
+
+func (rg *randomGenerator) RandomEmail() string {
+	return fmt.Sprintf("%s@%s.com", rg.RandomString(6), rg.RandomString(6))
 }
