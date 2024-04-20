@@ -62,5 +62,8 @@ test:
 server:
 	go run main.go
 
+mock:
+	mockgen -package mockdb -destination db/mock/store.go github.com/lordofthemind/backendMasterGo/db/sqlc Store
+
 # Phony targets to avoid conflicts with files of the same name
-.PHONY: createpg startpg stoppg removepg psql sh createdb dropdb dumpdb restoredb connectdb migrateup migratedown sqlc test server
+.PHONY: createpg startpg stoppg removepg psql sh createdb dropdb dumpdb restoredb connectdb migrateup migratedown sqlc test server mock

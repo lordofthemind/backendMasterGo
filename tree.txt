@@ -1,5 +1,9 @@
 .
 ├── Makefile
+├── api
+│   ├── account.go
+│   └── server.go
+├── app.env
 ├── db
 │   ├── migration
 │   │   ├── 000001_init_schema.down.sql
@@ -16,16 +20,19 @@
 │       ├── entry_test.go
 │       ├── main_test.go
 │       ├── models.go
+│       ├── querier.go
 │       ├── store.go
 │       ├── store_test.go
 │       ├── transfer.sql.go
 │       └── transfer_test.go
 ├── go.mod
 ├── go.sum
+├── main.go
 ├── simple_bank.sql
 ├── sqlc.yaml
 ├── tree.txt
 └── utils
+    ├── config.go
     └── randomGenerator.go
 
-5 directories, 23 files
+6 directories, 29 files
