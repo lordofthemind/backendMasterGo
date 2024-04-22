@@ -4,18 +4,154 @@ import (
 	"bytes"
 	"database/sql"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
+	"github.com/gin-gonic/gin"
 	"github.com/golang/mock/gomock"
 	mockdb "github.com/lordofthemind/backendMasterGo/db/mock"
 	db "github.com/lordofthemind/backendMasterGo/db/sqlc"
 	"github.com/lordofthemind/backendMasterGo/utils"
 	"github.com/stretchr/testify/require"
 )
+
+func TestCreateAccountAPI(t *testing.T) {
+	// Generate a random account for testing
+	account := randomAccount()
+
+	// Define test cases
+	testCases := []struct {
+		name          string                                                  // Name of the test case
+		body          gin.H                                                   // Request body
+		buildStubs    func(store *mockdb.MockStore)                           // Function to build stubs for the mock store
+		checkResponse func(t *testing.T, recorder *httptest.ResponseRecorder) // Function to check the HTTP response
+	}{
+		{
+			name: "Ok",
+			body: gin.H{
+				"owner":    account.Owner,
+				"balance":  0,
+				"currency": account.Currency,
+			},
+			buildStubs: func(store *mockdb.MockStore) {
+				// Stub the CreateAccount method to return the generated account
+				store.EXPECT().CreateAccount(gomock.Any(), gomock.Any()).Times(1).Return(account, nil)
+			},
+			checkResponse: func(t *testing.T, recorder *httptest.ResponseRecorder) {
+				// Check if the HTTP status code is OK (200) and the response body matches the generated account
+				require.Equal(t, http.StatusOK, recorder.Code)
+				requireBodyMatchAccount(t, recorder.Body, account)
+			},
+		},
+		{
+			name: "InternalError",
+			body: gin.H{
+				"owner":    account.Owner,
+				"balance":  0,
+				"currency": account.Currency,
+			},
+			buildStubs: func(store *mockdb.MockStore) {
+				store.EXPECT().CreateAccount(gomock.Any(), gomock.Any()).Times(1).Return(db.Account{}, errors.New("internal server error"))
+			},
+			checkResponse: func(t *testing.T, recorder *httptest.ResponseRecorder) {
+				require.Equal(t, http.StatusInternalServerError, recorder.Code)
+			},
+		},
+		{
+			name: "InvalidData",
+			body: gin.H{},
+			buildStubs: func(store *mockdb.MockStore) {
+				// No expectations, as no request should be made
+			},
+			checkResponse: func(t *testing.T, recorder *httptest.ResponseRecorder) {
+				require.Equal(t, http.StatusBadRequest, recorder.Code)
+			},
+		},
+		{
+			name: "MissingOwnerField",
+			body: gin.H{
+				"balance":  0,
+				"currency": account.Currency,
+			},
+			buildStubs: func(store *mockdb.MockStore) {
+				// No expectations, as no request should be made
+			},
+			checkResponse: func(t *testing.T, recorder *httptest.ResponseRecorder) {
+				require.Equal(t, http.StatusBadRequest, recorder.Code)
+			},
+		},
+		// {
+		// 	name: "MissingBalanceField",
+		// 	body: gin.H{
+		// 		"owner":    account.Owner,
+		// 		"currency": account.Currency,
+		// 	},
+		// 	buildStubs: func(store *mockdb.MockStore) {
+		// 		// No expectations, as no request should be made
+		// 	},
+		// 	checkResponse: func(t *testing.T, recorder *httptest.ResponseRecorder) {
+		// 		require.Equal(t, http.StatusBadRequest, recorder.Code)
+		// 	},
+		// },
+
+		{
+			name: "MissingCurrencyField",
+			body: gin.H{
+				"owner":   account.Owner,
+				"balance": 0,
+			},
+			buildStubs: func(store *mockdb.MockStore) {
+				// No expectations, as no request should be made
+			},
+			checkResponse: func(t *testing.T, recorder *httptest.ResponseRecorder) {
+				require.Equal(t, http.StatusBadRequest, recorder.Code)
+			},
+		},
+	}
+	// Iterate through test cases
+	for i := range testCases {
+		// Get the current test case
+		tc := testCases[i]
+
+		// Run the test case
+		t.Run(tc.name, func(t *testing.T) {
+			// Create a new mock controller
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			// Create a mock store
+			store := mockdb.NewMockStore(ctrl)
+
+			// Build stubs for the mock store
+			tc.buildStubs(store)
+
+			// Create a new server instance with the mock store
+			server := NewServer(store)
+
+			// Create a new HTTP recorder for recording the response
+			recorder := httptest.NewRecorder()
+
+			data, err := json.Marshal(tc.body)
+			require.NoError(t, err)
+
+			url := "/accounts"
+			// Create a new HTTP request to create the account
+			request, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(data))
+			require.NoError(t, err)
+
+			// Serve the HTTP request and record the response
+			server.router.ServeHTTP(recorder, request)
+
+			// Check the HTTP response against the expected response
+			tc.checkResponse(t, recorder)
+		})
+	}
+
+}
 
 func TestGetAccountAPI(t *testing.T) {
 	// Generate a random account for testing
