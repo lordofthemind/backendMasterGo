@@ -130,7 +130,7 @@ func TestCreateAccountAPI(t *testing.T) {
 			tc.buildStubs(store)
 
 			// Create a new server instance with the mock store
-			server := NewServer(store)
+			server := newTestServer(t, store)
 
 			// Create a new HTTP recorder for recording the response
 			recorder := httptest.NewRecorder()
@@ -233,7 +233,7 @@ func TestGetAccountAPI(t *testing.T) {
 			tc.buildStubs(store)
 
 			// Create a new server instance with the mock store
-			server := NewServer(store)
+			server := newTestServer(t, store)
 
 			// Create a new HTTP recorder for recording the response
 			recorder := httptest.NewRecorder()
