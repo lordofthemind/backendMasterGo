@@ -5,9 +5,12 @@
 │   ├── account.go
 │   ├── account_test.go
 │   ├── main_test.go
+│   ├── middleware.go
+│   ├── middleware_test.go
 │   ├── server.go
 │   ├── transfer.go
 │   ├── user.go
+│   ├── user_test.go
 │   └── validator.go
 ├── app.env
 ├── db
@@ -43,6 +46,13 @@
 ├── main.go
 ├── simple_bank.sql
 ├── sqlc.yaml
+├── token
+│   ├── jwt_maker.go
+│   ├── jwt_maker_test.go
+│   ├── maker.go
+│   ├── paseto_maker.go
+│   ├── paseto_maker_test.go
+│   └── payload.go
 ├── tree.txt
 └── utils
     ├── config.go
@@ -51,4 +61,4 @@
     ├── password_test.go
     └── randomGenerator.go
 
-7 directories, 44 files
+8 directories, 53 files

@@ -71,5 +71,7 @@ server:
 mock:
 	mockgen -package mockdb -destination db/mock/store.go github.com/lordofthemind/backendMasterGo/db/sqlc Store
 
+tree:
+	tree --gitignore > tree.txt
 # Phony targets to avoid conflicts with files of the same name
-.PHONY: createpg startpg stoppg removepg psql sh createdb dropdb dumpdb restoredb connectdb migrateup migratedown sqlc test server mock migrateup1 migratedown1
+.PHONY: createpg startpg stoppg removepg psql sh createdb dropdb dumpdb restoredb connectdb migrateup migratedown sqlc test server mock migrateup1 migratedown1 tree

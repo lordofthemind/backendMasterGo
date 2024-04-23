@@ -10,18 +10,21 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang/mock/gomock"
 	mockdb "github.com/lordofthemind/backendMasterGo/db/mock"
 	db "github.com/lordofthemind/backendMasterGo/db/sqlc"
+	"github.com/lordofthemind/backendMasterGo/token"
 	"github.com/lordofthemind/backendMasterGo/utils"
 	"github.com/stretchr/testify/require"
 )
 
 func TestCreateAccountAPI(t *testing.T) {
+	user, _ := randomUser(t)
 	// Generate a random account for testing
-	account := randomAccount()
+	account := randomAccount(user.Username)
 
 	// Define test cases
 	testCases := []struct {
@@ -154,19 +157,24 @@ func TestCreateAccountAPI(t *testing.T) {
 }
 
 func TestGetAccountAPI(t *testing.T) {
+	user, _ := randomUser(t)
 	// Generate a random account for testing
-	account := randomAccount()
+	account := randomAccount(user.Username)
 
 	// Define test cases
 	testCases := []struct {
-		name          string                                                  // Name of the test case
-		accountID     int64                                                   // ID of the account to fetch
-		buildStubs    func(store *mockdb.MockStore)                           // Function to build stubs for the mock store
-		checkResponse func(t *testing.T, recorder *httptest.ResponseRecorder) // Function to check the HTTP response
+		name          string // Name of the test case
+		accountID     int64
+		setupAuth     func(t *testing.T, req *http.Request, tokenMaker token.Maker) // ID of the account to fetch
+		buildStubs    func(store *mockdb.MockStore)                                 // Function to build stubs for the mock store
+		checkResponse func(t *testing.T, recorder *httptest.ResponseRecorder)       // Function to check the HTTP response
 	}{
 		{
 			name:      "Ok",       // Test case name
 			accountID: account.ID, // ID of the account to fetch
+			setupAuth: func(t *testing.T, req *http.Request, tokenMaker token.Maker) {
+				addAuthorization(t, req, tokenMaker, authorizationTypeBearer, user.Username, time.Minute)
+			},
 			buildStubs: func(store *mockdb.MockStore) {
 				// Stub the GetAccount method to return the generated account
 				store.EXPECT().GetAccount(gomock.Any(), gomock.Eq(account.ID)).Times(1).Return(account, nil)
@@ -178,8 +186,40 @@ func TestGetAccountAPI(t *testing.T) {
 			},
 		},
 		{
+			name:      "UnauthorisedUser", // Test case name
+			accountID: account.ID,         // ID of the account to fetch
+			setupAuth: func(t *testing.T, req *http.Request, tokenMaker token.Maker) {
+				addAuthorization(t, req, tokenMaker, authorizationTypeBearer, "unauthorised_user", time.Minute)
+			},
+			buildStubs: func(store *mockdb.MockStore) {
+				// Stub the GetAccount method to return the generated account
+				store.EXPECT().GetAccount(gomock.Any(), gomock.Eq(account.ID)).Times(1).Return(account, nil)
+			},
+			checkResponse: func(t *testing.T, recorder *httptest.ResponseRecorder) {
+				// Check if the HTTP status code is OK (200) and the response body matches the generated account
+				require.Equal(t, http.StatusUnauthorized, recorder.Code)
+			},
+		},
+		{
+			name:      "NoAuthorization", // Test case name
+			accountID: account.ID,        // ID of the account to fetch
+			setupAuth: func(t *testing.T, req *http.Request, tokenMaker token.Maker) {
+			},
+			buildStubs: func(store *mockdb.MockStore) {
+				// Stub the GetAccount method to return the generated account
+				store.EXPECT().GetAccount(gomock.Any(), gomock.Any()).Times(0)
+			},
+			checkResponse: func(t *testing.T, recorder *httptest.ResponseRecorder) {
+				// Check if the HTTP status code is OK (200) and the response body matches the generated account
+				require.Equal(t, http.StatusUnauthorized, recorder.Code)
+			},
+		},
+		{
 			name:      "NotFound", // Test case name
 			accountID: account.ID, // ID of the account to fetch
+			setupAuth: func(t *testing.T, req *http.Request, tokenMaker token.Maker) {
+				addAuthorization(t, req, tokenMaker, authorizationTypeBearer, user.Username, time.Minute)
+			},
 			buildStubs: func(store *mockdb.MockStore) {
 				// Stub the GetAccount method to return the generated account
 				store.EXPECT().GetAccount(gomock.Any(), gomock.Eq(account.ID)).Times(1).Return(db.Account{}, sql.ErrNoRows)
@@ -192,6 +232,9 @@ func TestGetAccountAPI(t *testing.T) {
 		{
 			name:      "InternalError", // Test case name
 			accountID: account.ID,      // ID of the account to fetch
+			setupAuth: func(t *testing.T, req *http.Request, tokenMaker token.Maker) {
+				addAuthorization(t, req, tokenMaker, authorizationTypeBearer, user.Username, time.Minute)
+			},
 			buildStubs: func(store *mockdb.MockStore) {
 				// Stub the GetAccount method to return the generated account
 				store.EXPECT().GetAccount(gomock.Any(), gomock.Eq(account.ID)).Times(1).Return(db.Account{}, sql.ErrConnDone)
@@ -204,6 +247,9 @@ func TestGetAccountAPI(t *testing.T) {
 		{
 			name:      "InvalidId", // Test case name
 			accountID: 0,           // ID of the account to fetch
+			setupAuth: func(t *testing.T, req *http.Request, tokenMaker token.Maker) {
+				addAuthorization(t, req, tokenMaker, authorizationTypeBearer, user.Username, time.Minute)
+			},
 			buildStubs: func(store *mockdb.MockStore) {
 				// Stub the GetAccount method to return the generated account
 				store.EXPECT().GetAccount(gomock.Any(), gomock.Any()).Times(0)
@@ -242,6 +288,9 @@ func TestGetAccountAPI(t *testing.T) {
 			url := fmt.Sprintf("/accounts/%d", tc.accountID)
 			request, err := http.NewRequest(http.MethodGet, url, nil)
 			require.NoError(t, err)
+
+			// Set up the authentication for the request
+			tc.setupAuth(t, request, server.tokenMaker)
 
 			// Serve the HTTP request and record the response
 			server.router.ServeHTTP(recorder, request)
@@ -403,11 +452,11 @@ func TestGetAccountAPI(t *testing.T) {
 // 	}
 // }
 
-func randomAccount() db.Account {
+func randomAccount(owner string) db.Account {
 	rg := utils.NewRandomGenerator()
 	return db.Account{
 		ID:       rg.RandomInt(1, 1000),
-		Owner:    rg.RandomOwner(),
+		Owner:    owner,
 		Balance:  rg.RandomMoney(),
 		Currency: rg.RandomCurrency(),
 	}
