@@ -9,6 +9,7 @@
 │   ├── middleware_test.go
 │   ├── server.go
 │   ├── transfer.go
+│   ├── transfer_test.go
 │   ├── user.go
 │   ├── user_test.go
 │   └── validator.go
@@ -54,6 +55,7 @@
 │   ├── paseto_maker_test.go
 │   └── payload.go
 ├── tree.txt
+├── tst.go
 └── utils
     ├── config.go
     ├── currency.go
@@ -61,4 +63,4 @@
     ├── password_test.go
     └── randomGenerator.go
 
-8 directories, 53 files
+8 directories, 55 files
