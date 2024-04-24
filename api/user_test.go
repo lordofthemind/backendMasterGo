@@ -180,6 +180,9 @@ func TestCreateUserAPI(t *testing.T) {
 	}
 }
 
+func TestLoginUserAPI(t *testing.T) {
+}
+
 func randomUser(t *testing.T) (user db.User, password string) {
 	rg := utils.NewRandomGenerator()
 

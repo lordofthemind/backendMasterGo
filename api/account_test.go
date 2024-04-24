@@ -249,6 +249,9 @@ func TestGetAccountAPI(t *testing.T) {
 	}
 }
 
+func TestListAccountsAPI(t *testing.T) {
+}
+
 func randomAccount(owner string) db.Account {
 	rg := utils.NewRandomGenerator()
 	return db.Account{
