@@ -1,4 +1,5 @@
 .
+├── Dockerfile
 ├── Makefile
 ├── TestGetAccountAPI.png
 ├── api
@@ -42,9 +43,11 @@
 │       ├── transfer_test.go
 │       ├── user.sql.go
 │       └── user_test.go
+├── docker-compose.yml
 ├── go.mod
 ├── go.sum
 ├── main.go
+├── run
 ├── simple_bank.sql
 ├── sqlc.yaml
 ├── token
@@ -55,7 +58,6 @@
 │   ├── paseto_maker_test.go
 │   └── payload.go
 ├── tree.txt
-├── tst.go
 └── utils
     ├── config.go
     ├── currency.go
@@ -63,4 +65,4 @@
     ├── password_test.go
     └── randomGenerator.go
 
-8 directories, 55 files
+8 directories, 57 files
