@@ -1,6 +1,8 @@
 .
 ├── Dockerfile
+├── LICENSE
 ├── Makefile
+├── README.md
 ├── TestGetAccountAPI.png
 ├── api
 │   ├── account.go
@@ -47,9 +49,11 @@
 ├── go.mod
 ├── go.sum
 ├── main.go
+├── migrate
 ├── run
 ├── simple_bank.sql
 ├── sqlc.yaml
+├── start.sh
 ├── token
 │   ├── jwt_maker.go
 │   ├── jwt_maker_test.go
@@ -58,11 +62,12 @@
 │   ├── paseto_maker_test.go
 │   └── payload.go
 ├── tree.txt
-└── utils
-    ├── config.go
-    ├── currency.go
-    ├── password.go
-    ├── password_test.go
-    └── randomGenerator.go
+├── utils
+│   ├── config.go
+│   ├── currency.go
+│   ├── password.go
+│   ├── password_test.go
+│   └── randomGenerator.go
+└── wait-for.sh
 
-8 directories, 57 files
+8 directories, 62 files
