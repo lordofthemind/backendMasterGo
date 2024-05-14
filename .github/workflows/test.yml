@@ -49,3 +49,10 @@ jobs:
 
     - name: Test
       run: make test
+
+
+
+# Path: Makefile
+# migrateup:
+#   migrate -path db/migration -database "postgresql://root:backendMasterGoSecret@localhost:5432/simple_bank?sslmode=disable" -verbose up
+

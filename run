@@ -1,3 +1,0 @@
-#!/bin/bash
-
-docker run --name simplebank --network bank-network -p 9090:9090 -e DB_SOURCE="postgresql://root:backendMasterGoSecret@backendMasterGo:5432/simple_bank?sslmode=disable" simplebank2:latest
